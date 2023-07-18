@@ -135,6 +135,27 @@ RegisterNetEvent('qb-admin:server:giveallweapons', function(Weapontype, PlayerID
     end
 end)
 
+RegisterNetEvent('qb-adminmenu:savecar', function(mods, vehicle, hash, plate)
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    local result = MySQL.Sync.fetchAll('SELECT plate FROM player_vehicles WHERE plate = ?', { plate })
+    if result[1] == nil then
+        MySQL.Async.insert('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (?, ?, ?, ?, ?, ?, ?)', {
+            Player.PlayerData.license,
+            Player.PlayerData.citizenid,
+            vehicle.model,
+            vehicle.hash,
+            json.encode(mods),
+            plate,
+            0
+        })
+        -- TriggerEvent("qb-log:server:CreateLog", Config.LogChannel, "God Car", "blue", "\n**"..Player.PlayerData.name.."** saved a vehicle\n**CitizenID**: "..Player.PlayerData.citizenid.."\n**Character**: "..Player.PlayerData.charinfo.charname.."\n**Vehicle**: "..vehicle.model.."\n**Plate**: "..plate)
+        TriggerClientEvent('QBCore:Notify', src, "The vehicle is now yours!", 'success', 5000)
+    else
+        TriggerClientEvent('QBCore:Notify', src, "This vehicle is already yours.", 'error', 3000)
+    end
+end)
+
 lib.callback.register('qb-admin:callback:getradiolist', function(source, Frequency)
     local list = exports['pma-voice']:getPlayersInRadioChannel(tonumber(Frequency))
     local Players = {}

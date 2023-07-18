@@ -20,6 +20,13 @@ lib.addCommand('names', {
     TriggerClientEvent('qb-admin:client:names', source)
 end)
 
+lib.addCommand('admincar', {
+    help = "save car init",
+    restricted = "group.admin"
+}, function(source)
+    TriggerClientEvent('QBCore:Command:AdminCar', source)
+end)
+
 lib.addCommand('blips', {
     help = 'Toggle Player Blips',
     restricted = 'admin',
